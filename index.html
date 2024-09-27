@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>4K Video Editor</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        #upload-form { margin-top: 50px; }
+        input[type="file"] { margin: 20px; }
+    </style>
+</head>
+<body>
+    <h1>4K Video Editor</h1>
+    <form id="upload-form" enctype="multipart/form-data">
+        <input type="file" name="video" accept="video/*" required>
+        <button type="submit">Upload and Edit</button>
+    </form>
+    <div id="result"></div>
+
+    <script>
+        document.getElementById('upload-form').onsubmit = async function(event) {
+            event.preventDefault();
+            const formData = new FormData(this);
+            const response = await fetch('/process', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (response.ok) {
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'output.mp4';
+                a.innerText = 'Download the processed video';
+                document.getElementById('result').innerHTML = '';
+                document.getElementById('result').appendChild(a);
+            } else {
+                document.getElementById('result').innerText = 'Error processing video.';
+            }
+        };
+    </script>
+</body>
+</html>
